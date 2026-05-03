@@ -1,6 +1,7 @@
-import UseActivityTimeoutDefinitions from 'api-handler/hooks/definitions/use-activity-timeout-definitions';
-import UseActivityTimeoutParams from 'api-handler/hooks/definitions/use-activity-timeout-params-definitions';
 import { AxiosError } from 'axios';
+
+import UseActivityTimeoutDefinitions from 'lib/api-handler/hooks/definitions/use-activity-timeout-definitions';
+import UseActivityTimeoutParams from 'lib/api-handler/hooks/definitions/use-activity-timeout-params-definitions';
 
 export const useActivityTimeout = (): UseActivityTimeoutDefinitions => {
   const handleInactivity = ({

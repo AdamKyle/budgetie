@@ -1,10 +1,11 @@
 import React, { ReactNode } from 'react';
-import { serviceContainer } from 'service-container/core-container';
 
-import { ApiHandlerContext } from '../api-handler-context';
 import ApiHandlerProviderProps from './types/api-handler-provider-props';
-import AxiosDefinition from '../definitions/axios-definition';
-import { getUrl } from '../utils/get-url';
+
+import { ApiHandlerContext } from 'lib/api-handler/api-handler-context';
+import AxiosDefinition from 'lib/api-handler/definitions/axios-definition';
+import { getUrl } from 'lib/api-handler/utils/get-url';
+import { serviceContainer } from 'lib/service-container/core-container';
 
 export const ApiHandlerProvider = (
   props: ApiHandlerProviderProps

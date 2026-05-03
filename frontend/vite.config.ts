@@ -26,6 +26,8 @@ export default defineConfig({
       router: path.resolve(dirname, 'src/react-router'),
       styles: path.resolve(dirname, 'src/styles'),
       ui: path.resolve(dirname, 'src/ui'),
+      configuration: path.resolve(dirname, 'src/configuration'),
+      lib: path.resolve(dirname, 'src/lib'),
     },
   },
 });

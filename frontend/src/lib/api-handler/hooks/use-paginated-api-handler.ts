@@ -1,10 +1,11 @@
-import ApiParametersDefinitions from 'api-handler/definitions/api-parameters-definitions';
-import PaginatedApiHandlerDefinition from 'api-handler/definitions/paginated-api-handler-definition';
-import { PaginatedApiResponseDefinition } from 'api-handler/definitions/paginated-api-response-definition';
-import { useApiHandler } from 'api-handler/hooks/use-api-handler';
-import { shallowEqual } from 'api-handler/utils/shallow-equal';
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import ApiParametersDefinitions from 'lib/api-handler/definitions/api-parameters-definitions';
+import PaginatedApiHandlerDefinition from 'lib/api-handler/definitions/paginated-api-handler-definition';
+import { PaginatedApiResponseDefinition } from 'lib/api-handler/definitions/paginated-api-response-definition';
+import { useApiHandler } from 'lib/api-handler/hooks/use-api-handler';
+import { shallowEqual } from 'lib/api-handler/utils/shallow-equal';
 
 const UsePaginatedApiHandler = <
   T,

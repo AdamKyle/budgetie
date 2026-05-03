@@ -1,6 +1,5 @@
-import { AxiosErrorDefinition } from 'api-handler/definitions/axios-error-definition';
-
-import { StateSetter } from '../../types/state-setter-type';
+import { AxiosErrorDefinition } from 'lib/api-handler/definitions/axios-error-definition';
+import { StateSetter } from 'lib/types/state-setter-type';
 
 export default interface PaginatedApiHandlerDefinition<
   T,

@@ -17,19 +17,15 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "paths": {
-      "api/*": ["./src/api/*"],
       "assets/*": ["./src/assets/*"],
       "components/*": ["./src/components/*"],
-      "constants/*": ["./src/constants/*"],
-      "contexts/*": ["./src/contexts/*"],
-      "hooks/*": ["./src/hooks/*"],
       "layout/*": ["./src/layout/*"],
       "pages/*": ["./src/pages/*"],
       "router/*": ["./src/react-router/*"],
       "styles/*": ["./src/styles/*"],
-      "types/*": ["./src/types/*"],
       "ui/*": ["./src/ui/*"],
-      "utils/*": ["./src/utils/*"]
+      "configuration/*": ["./src/configuration/*"],
+      "lib/*": ["./src/lib/*"]
     }
   },
   "include": ["src"],
