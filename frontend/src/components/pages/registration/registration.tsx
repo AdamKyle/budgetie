@@ -1,15 +1,83 @@
-import React, { FormEvent } from 'react';
+import React, { ChangeEvent, FormEvent, ReactNode, useState } from 'react';
 
 import registerImage from 'assets/login-and-registration/budgetie-register.png';
 
+import { useRegister } from 'components/pages/registration/api/hooks/use-register';
+
 import Button from 'ui/buttons/button';
 import { ButtonVariant } from 'ui/buttons/enums/button-variant';
+import IconButton from 'ui/buttons/icon-button';
 import Card from 'ui/cards/card';
 import Input from 'ui/form-elements/input';
 
 const Registration = () => {
+  const { error, loading, setRequestData } = useRegister();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const isSubmitDisabled = email === '' || password === '' || loading;
+
+  const getErrorMessage = (fieldError?: string | string[]): string | null => {
+    if (!fieldError) {
+      return null;
+    }
+
+    if (Array.isArray(fieldError)) {
+      return fieldError.join(' ');
+    }
+
+    return fieldError;
+  };
+
+  const handleChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
+
+  const handleChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+  };
+
+  const handleClickLoadingButton = () => undefined;
+
   const handleSubmitRegister = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isSubmitDisabled) {
+      return;
+    }
+
+    setRequestData({
+      email,
+      password,
+    });
+  };
+
+  const renderSubmitButton = (): ReactNode => {
+    if (!loading) {
+      return (
+        <Button
+          additional_css="w-full md:w-auto"
+          disabled={isSubmitDisabled}
+          label="Create account"
+          type="submit"
+          variant={ButtonVariant.PRIMARY}
+        />
+      );
+    }
+
+    return (
+      <IconButton
+        additional_css="w-full md:w-auto"
+        aria_label="Creating account"
+        disabled
+        icon="fa-solid fa-arrows-rotate animate-spin"
+        label="Creating account"
+        on_click={handleClickLoadingButton}
+        show_label
+        variant={ButtonVariant.PRIMARY}
+      />
+    );
   };
 
   return (
@@ -45,31 +113,30 @@ const Registration = () => {
           <form className="flex flex-col gap-5" onSubmit={handleSubmitRegister}>
             <Input
               autoComplete="email"
+              error={getErrorMessage(error?.email)}
               id="register-email"
               label="Email"
               name="email"
+              onChange={handleChangeEmail}
               placeholder="you@example.com"
               required
               type="email"
+              value={email}
             />
 
             <Input
               autoComplete="new-password"
+              error={getErrorMessage(error?.password)}
               id="register-password"
               label="Password"
               name="password"
+              onChange={handleChangePassword}
               required
               type="password"
+              value={password}
             />
 
-            <div className="flex justify-end">
-              <Button
-                additional_css="w-full md:w-auto"
-                label="Create account"
-                type="submit"
-                variant={ButtonVariant.PRIMARY}
-              />
-            </div>
+            <div className="flex justify-end">{renderSubmitButton()}</div>
           </form>
         </Card>
       </section>

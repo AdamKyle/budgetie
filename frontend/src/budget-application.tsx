@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router';
 
 import PublicLayout from './layout/public-layout';
 import LandingPage from './pages/landing-page';
+import Onboard from './pages/protected/onboard';
 import About from './pages/public/about';
 import Login from './pages/public/login';
 import Register from './pages/public/register';
@@ -17,6 +18,9 @@ const BudgetieApplication = () => {
         <Route path={NavigationRoutes.UPDATES} element={<Updates />} />
         <Route path={NavigationRoutes.LOGIN} element={<Login />} />
         <Route path={NavigationRoutes.REGISTER} element={<Register />} />
+
+        {/* Protected Routes */}
+        <Route path={NavigationRoutes.ONBOARDING} element={<Onboard />} />
       </Route>
     </Routes>
   );
