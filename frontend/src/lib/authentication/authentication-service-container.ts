@@ -9,7 +9,7 @@ export const authenticationServiceContainer: ModularContainerDefinition = (
   container: CoreContainerDefinition
 ) => {
   container.register<AuthenticationTokenStorageDefinition>(
-    'ApiHandler',
+    'AuthenticationTokenStorage',
     new AuthenticationTokenStorage()
   );
 };

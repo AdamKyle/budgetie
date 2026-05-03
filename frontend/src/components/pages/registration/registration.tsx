@@ -1,4 +1,4 @@
-import type { FormEvent } from 'react';
+import React, { FormEvent } from 'react';
 
 import registerImage from 'assets/login-and-registration/budgetie-register.png';
 
@@ -7,7 +7,7 @@ import { ButtonVariant } from 'ui/buttons/enums/button-variant';
 import Card from 'ui/cards/card';
 import Input from 'ui/form-elements/input';
 
-const Register = () => {
+const Registration = () => {
   const handleSubmitRegister = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   };
@@ -77,4 +77,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Registration;

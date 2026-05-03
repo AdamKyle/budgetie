@@ -11,7 +11,7 @@ export const AuthenticationTokenStorageProvider = ({
 }: AuthenticationTokenStorageProviderProps) => {
   const authenticationTokenStorage =
     serviceContainer().fetch<AuthenticationTokenStorageDefinition>(
-      'AuthenticationTokenStroage'
+      'AuthenticationTokenStorage'
     );
 
   return (
