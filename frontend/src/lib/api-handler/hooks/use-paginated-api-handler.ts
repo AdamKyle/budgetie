@@ -1,0 +1,128 @@
+import ApiParametersDefinitions from 'api-handler/definitions/api-parameters-definitions';
+import PaginatedApiHandlerDefinition from 'api-handler/definitions/paginated-api-handler-definition';
+import { PaginatedApiResponseDefinition } from 'api-handler/definitions/paginated-api-response-definition';
+import { useApiHandler } from 'api-handler/hooks/use-api-handler';
+import { shallowEqual } from 'api-handler/utils/shallow-equal';
+import { AxiosError, AxiosRequestConfig } from 'axios';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+const UsePaginatedApiHandler = <
+  T,
+  F extends Record<string, unknown> = Record<string, unknown>,
+>(
+  params: ApiParametersDefinitions,
+  perPage = 10
+): PaginatedApiHandlerDefinition<T, F> => {
+  const { apiHandler, getUrl } = useApiHandler();
+  const url = getUrl(params.url, params.urlParams);
+
+  const [data, setData] = useState<T[]>([]);
+  const [error, setError] =
+    useState<PaginatedApiHandlerDefinition<T, F>['error']>(null);
+  const [loading, setLoading] = useState(true);
+  const [canLoadMore, setCanLoadMore] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [searchText, setSearchText] = useState('');
+  const [filters, setFilters] = useState<F>({} as F);
+  const [refresh, setRefresh] = useState(false);
+
+  const previousSearchTextRef = useRef(searchText);
+  const previousFiltersRef = useRef<F>(filters);
+
+  const fetchPaginatedData = useCallback(
+    async () => {
+      if (page > 1) {
+        setIsLoadingMore(true);
+      }
+
+      try {
+        const result = await apiHandler.get<
+          PaginatedApiResponseDefinition<T[]>,
+          AxiosRequestConfig<PaginatedApiResponseDefinition<T[]>>
+        >(url, {
+          params: {
+            per_page: perPage,
+            page,
+            search_text: searchText,
+            filters,
+          },
+        });
+
+        setData((previousData) =>
+          page === 1 ? result.data : [...previousData, ...result.data]
+        );
+        setCanLoadMore(result.meta.can_load_more);
+      } catch (errorInstance) {
+        if (errorInstance instanceof AxiosError) {
+          const response = errorInstance.response;
+
+          if (!response) {
+            return;
+          }
+
+          /**
+           * If we are not logged in, reload to put them back on the login screen.
+           */
+          if (response.status === 401) {
+            window.location.reload();
+          }
+
+          setError(errorInstance.response?.data || null);
+        } else {
+          setError(null);
+        }
+      } finally {
+        setLoading(false);
+        setIsLoadingMore(false);
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [apiHandler, url, page, perPage, refresh]
+  );
+
+  useEffect(() => {
+    fetchPaginatedData().catch(console.error);
+  }, [fetchPaginatedData]);
+
+  useEffect(() => {
+    const isSameSearch = previousSearchTextRef.current === searchText;
+
+    const isSameFilters = shallowEqual(previousFiltersRef.current, filters);
+
+    if (isSameSearch && isSameFilters) {
+      return;
+    }
+
+    previousSearchTextRef.current = searchText;
+
+    previousFiltersRef.current = filters;
+
+    setPage(1);
+    setRefresh((previousValue) => !previousValue);
+  }, [searchText, filters]);
+
+  const onEndReached = () => {
+    if (!canLoadMore || isLoadingMore) {
+      return;
+    }
+
+    setPage((previousValue) => previousValue + 1);
+  };
+
+  return {
+    data,
+    error,
+    loading,
+    canLoadMore,
+    isLoadingMore,
+    page,
+    onEndReached,
+    setSearchText,
+    setFilters,
+    setPage,
+    setRefresh,
+  };
+};
+
+export default UsePaginatedApiHandler;
