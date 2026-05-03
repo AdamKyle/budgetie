@@ -3,12 +3,11 @@ import { NavLink } from 'react-router';
 
 import type BaseMobileNavigationProps from './types/base-mobile-navigation-props';
 
-import ToggleDarkMode from 'components/dark-mode-toggle/toggle-dark-mode';
-
 import type NavigationItemDefinition from 'router/public-routes/definitions/navigation-item-definition';
 
 import Button from 'ui/buttons/button';
 import { ButtonVariant } from 'ui/buttons/enums/button-variant';
+import ToggleDarkMode from 'ui/dark-mode-toggle/toggle-dark-mode';
 
 const BaseMobileNavigation = ({
   isMenuOpen,

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export type SectionWithImageCardProps = {
+export type CardWithImageProps = {
   children: ReactNode;
   id: string;
   imageAlt: string;

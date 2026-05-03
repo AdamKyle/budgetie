@@ -1,6 +1,6 @@
 import { AboutSections } from './sections-definitions/about-section';
 
-import SectionWithImageCard from 'components/section/section-with-image-card/section-with-image-card';
+import CardWithImage from 'ui/cards/card-with-image';
 
 const About = () => {
   return (
@@ -24,7 +24,7 @@ const About = () => {
         </div>
 
         {AboutSections.map((section) => (
-          <SectionWithImageCard
+          <CardWithImage
             id={section.id}
             imageAlt={section.imageAlt}
             imageSrc={section.imageSrc}
@@ -33,7 +33,7 @@ const About = () => {
             title={section.title}
           >
             <p>{section.text}</p>
-          </SectionWithImageCard>
+          </CardWithImage>
         ))}
       </section>
     </main>

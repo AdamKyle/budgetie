@@ -35,8 +35,6 @@ class RegisterUserRequest:
     def validate(self) -> RegisterUserDataType:
         email = User.objects.normalize_email(self._get_required_string("email")).lower()
         password = self._get_required_string("password")
-        first_name = self._get_required_string("first_name")
-        last_name = self._get_required_string("last_name")
 
         self._validate_email(email)
         self._validate_unique_email(email)
@@ -45,8 +43,6 @@ class RegisterUserRequest:
         return {
             "email": email,
             "password": password,
-            "first_name": first_name,
-            "last_name": last_name,
         }
 
     def _get_required_string(self, field: str) -> str:

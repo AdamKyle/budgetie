@@ -120,6 +120,7 @@ export default [
           ],
           pathGroups: [
             { pattern: 'react', group: 'builtin', position: 'before' },
+            { pattern: 'axios', group: 'builtin', position: 'after' },
             { pattern: 'configuration/**', group: 'internal', position: 'after' },
             { pattern: 'lib/**', group: 'internal', position: 'after' },
             { pattern: 'assets/**', group: 'internal', position: 'after' },

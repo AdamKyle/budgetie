@@ -1,15 +1,15 @@
 import clsx from 'clsx';
 
-import type { SectionWithImageCardProps } from './types/section-with-image-card-props';
+import type { CardWithImageProps } from './types/card-with-image-card-props';
 
-const SectionWithImageCard = ({
+const CardWithImage = ({
   children,
   id,
   imageAlt,
   imageSrc,
   title,
   isImageRight = false,
-}: SectionWithImageCardProps) => {
+}: CardWithImageProps) => {
   const titleId = `${id}-title`;
 
   return (
@@ -47,4 +47,4 @@ const SectionWithImageCard = ({
   );
 };
 
-export default SectionWithImageCard;
+export default CardWithImage;

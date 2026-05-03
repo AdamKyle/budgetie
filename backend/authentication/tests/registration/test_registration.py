@@ -13,8 +13,6 @@ class RegistrationTest(APITestCase):
         return {
             "email": "test@example.com",
             "password": "StrongPassword123!",
-            "first_name": "Test",
-            "last_name": "User",
         }
 
     def test_user_can_register_and_receives_authentication_response(self) -> None:
@@ -28,8 +26,6 @@ class RegistrationTest(APITestCase):
         self.assertIn("access", response.data)
         self.assertIn("refresh", response.data)
         self.assertEqual(response.data["user"]["email"], "test@example.com")
-        self.assertEqual(response.data["user"]["first_name"], "Test")
-        self.assertEqual(response.data["user"]["last_name"], "User")
         self.assertEqual(response.data["user"]["profile_photo"], "")
         self.assertNotIn("password", response.data["user"])
 
@@ -52,7 +48,7 @@ class RegistrationTest(APITestCase):
 
     def test_registration_rejects_missing_required_field(self) -> None:
         payload = self.get_registration_payload()
-        del payload["first_name"]
+        del payload["password"]
 
         response = self.client.post(
             reverse("registration-list"),
@@ -61,7 +57,7 @@ class RegistrationTest(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["first_name"], "This field is required.")
+        self.assertEqual(response.data["password"], "This field is required.")
 
     def test_registration_rejects_invalid_email(self) -> None:
         payload = self.get_registration_payload()

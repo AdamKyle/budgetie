@@ -6,8 +6,6 @@ import BaseMobileNavigation from './base-mobile-navigation';
 
 import mascotImage from 'assets/mascot/budegtie-mascot.png';
 
-import ToggleDarkMode from 'components/dark-mode-toggle/toggle-dark-mode';
-
 import { NavigationRoutes } from 'router/enums/navigation-routes';
 import type NavigationItemDefinition from 'router/public-routes/definitions/navigation-item-definition';
 import { PUBLIC_NAVIGATION_ITEMS } from 'router/public-routes/public';
@@ -16,6 +14,7 @@ import navigateToRoute from 'router/utils/navigate-to-route';
 import Button from 'ui/buttons/button';
 import { ButtonVariant } from 'ui/buttons/enums/button-variant';
 import IconButton from 'ui/buttons/icon-button';
+import ToggleDarkMode from 'ui/dark-mode-toggle/toggle-dark-mode';
 
 const BaseNavigation = () => {
   const navigate = useNavigate();
