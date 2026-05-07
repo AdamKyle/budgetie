@@ -13,6 +13,7 @@ pyjwt = "*"
 gunicorn = "*"
 djangorestframework-simplejwt = "*"
 msgspec = "*"
+dj-rest-auth = {extras = ["with-social"], version = "*"}
 
 [dev-packages]
 ruff = "*"

@@ -12,6 +12,7 @@ class User(AbstractBaseUser):
     profile_photo = models.CharField(max_length=100, blank=True, default="")
     is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField(default=timezone.now)
+    completed_onboarding = models.BooleanField(default=False)
 
     objects = UserManager()
 
