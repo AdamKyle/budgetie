@@ -1,5 +1,3 @@
-import { AxiosErrorDefinition } from 'lib/api-handler/definitions/axios-error-definition';
-
 import { StateSetter } from 'lib/types/state-setter-type';
 
 export default interface PaginatedApiHandlerDefinition<
@@ -7,7 +5,7 @@ export default interface PaginatedApiHandlerDefinition<
   F extends Record<string, unknown>,
 > {
   data: T[];
-  error: AxiosErrorDefinition | null;
+  error: unknown | null;
   loading: boolean;
   canLoadMore: boolean;
   isLoadingMore: boolean;
