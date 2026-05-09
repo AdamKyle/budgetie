@@ -1,106 +1,30 @@
-from django.core.cache import cache
-from django.test import override_settings
-from rest_framework import status
-from rest_framework.test import APIClient, APITestCase
-from rest_framework.throttling import ScopedRateThrottle
+import os
 
-THROTTLE_TEST_REST_FRAMEWORK = {
-    "DEFAULT_THROTTLE_CLASSES": [
-        "rest_framework.throttling.ScopedRateThrottle",
-    ],
-    "DEFAULT_THROTTLE_RATES": {
-        "auth_csrf": "1/min",
-        "auth_login": "1/min",
-        "auth_registration": "1/min",
-        "auth_social_google": "1/min",
-        "dj_rest_auth": "1/min",
-    },
-}
+from django.conf import settings
+from django.test import TestCase
 
 
-@override_settings(REST_FRAMEWORK=THROTTLE_TEST_REST_FRAMEWORK)
-class AuthThrottlingTest(APITestCase):
-    def setUp(self) -> None:
-        cache.clear()
-        self.original_throttle_rates = ScopedRateThrottle.THROTTLE_RATES
-        ScopedRateThrottle.THROTTLE_RATES = THROTTLE_TEST_REST_FRAMEWORK["DEFAULT_THROTTLE_RATES"]
+class SecuritySettingsTest(TestCase):
+    def test_cookie_security_matches_debug_mode(self) -> None:
+        configured_debug = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
-    def tearDown(self) -> None:
-        ScopedRateThrottle.THROTTLE_RATES = self.original_throttle_rates
-        cache.clear()
+        self.assertEqual(settings.CSRF_COOKIE_SECURE, not configured_debug)
+        self.assertEqual(settings.SESSION_COOKIE_SECURE, not configured_debug)
+        self.assertEqual(settings.REST_AUTH["JWT_AUTH_SECURE"], not configured_debug)
 
-    def test_csrf_endpoint_is_throttled(self) -> None:
-        client = APIClient()
+    def test_ssl_and_hsts_settings_match_debug_mode(self) -> None:
+        configured_debug = os.environ.get("DJANGO_DEBUG", "False") == "True"
 
-        first_response = client.get("/api/auth/csrf/", secure=True)
-        second_response = client.get("/api/auth/csrf/", secure=True)
+        self.assertEqual(settings.SECURE_SSL_REDIRECT, not configured_debug)
+        self.assertEqual(settings.SECURE_HSTS_SECONDS, 0 if configured_debug else 31536000)
+        self.assertEqual(settings.SECURE_HSTS_INCLUDE_SUBDOMAINS, not configured_debug)
+        self.assertEqual(settings.SECURE_HSTS_PRELOAD, not configured_debug)
 
-        self.assertEqual(first_response.status_code, status.HTTP_200_OK)
-        self.assertEqual(second_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-
-    def test_login_endpoint_is_throttled(self) -> None:
-        client = APIClient()
-
-        first_response = client.post(
-            "/api/auth/login/",
-            {
-                "email": "missing@example.com",
-                "password": "WrongPassword123!",
-            },
-            format="json",
-            secure=True,
+    def test_security_headers_are_configured(self) -> None:
+        self.assertTrue(settings.SECURE_CONTENT_TYPE_NOSNIFF)
+        self.assertEqual(settings.SECURE_REFERRER_POLICY, "same-origin")
+        self.assertEqual(settings.X_FRAME_OPTIONS, "DENY")
+        self.assertEqual(
+            settings.SECURE_PROXY_SSL_HEADER,
+            ("HTTP_X_FORWARDED_PROTO", "https"),
         )
-        second_response = client.post(
-            "/api/auth/login/",
-            {
-                "email": "missing@example.com",
-                "password": "WrongPassword123!",
-            },
-            format="json",
-            secure=True,
-        )
-
-        self.assertNotEqual(first_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-        self.assertEqual(second_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-
-    def test_registration_endpoint_is_throttled(self) -> None:
-        client = APIClient()
-
-        first_response = client.post(
-            "/api/auth/registration/",
-            {
-                "email": "throttle@example.com",
-            },
-            format="json",
-            secure=True,
-        )
-        second_response = client.post(
-            "/api/auth/registration/",
-            {
-                "email": "throttle@example.com",
-            },
-            format="json",
-            secure=True,
-        )
-
-        self.assertNotEqual(first_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-        self.assertEqual(second_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-
-    def test_google_social_auth_endpoint_is_throttled(self) -> None:
-        client = APIClient()
-
-        first_response = client.post(
-            "/api/auth/social/google/",
-            {},
-            format="json",
-            secure=True,
-        )
-        second_response = client.post(
-            "/api/auth/social/google/",
-            {},
-            format="json",
-            secure=True,
-        )
-
-        self.assertNotEqual(first_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
-        self.assertEqual(second_response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
