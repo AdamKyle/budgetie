@@ -23,20 +23,19 @@ const LandingPage = () => {
   return (
     <main>
       <HeroSection
-        title="Budgetie Helps you budget based on periods of time
-"
+        title="Finance Harbour helps you budget based on periods of time"
         subtitle={
           <>
             <span className="block">
               Track your income, expenses, and transactions in one place across
               monthly budgets, pay cycles, or any custom period. As you spend,
-              Budgetie updates your budget so you always know what changed, what
-              is left, and where your money is going.
+              Finance Harbour updates your budget so you always know what
+              changed, what is left, and where your money is going.
             </span>
           </>
         }
         imageSrc={budgetChart}
-        imageAlt="Budgetie dashboard preview with income, spending, savings, and an upward chart"
+        imageAlt="Finance Harbour dashboard preview with income, spending, savings, and an upward chart"
       >
         <Button
           on_click={handleNavigateToRegistration}
@@ -45,7 +44,7 @@ const LandingPage = () => {
         />
         <Button
           on_click={handleNavigateToAbout}
-          label="Learn more about Budgetie!"
+          label="Learn more about Finance Harbour!"
           variant={ButtonVariant.PRIMARY}
         />
       </HeroSection>

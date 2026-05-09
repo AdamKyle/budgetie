@@ -1,6 +1,6 @@
-# Budgetie
+# Finance Harbour
 
-Budgetie is a personal budget planning app built with Django REST Framework, PostgreSQL, React, TypeScript, Tailwind CSS, Vite, Yarn, and Docker.
+Finance Harbour is a personal budget planning app built with Django REST Framework, PostgreSQL, React, TypeScript, Tailwind CSS, Vite, Yarn, and Docker.
 
 ## Setup
 
@@ -10,31 +10,42 @@ Copy the example environment file:
 cp .env.example .env
 ```
 
-Fill out `.env` with:
+Fill out `.env` with local development values:
 
 ```env
-POSTGRES_DB=budgetie
-POSTGRES_USER=budgetie
+POSTGRES_DB=finance_harbour
+POSTGRES_USER=finance_harbour
 POSTGRES_PASSWORD=your_password_here
 POSTGRES_HOST=database
 POSTGRES_PORT=5432
 
-BACKEND_PORT=8001
+PGADMIN_DEFAULT_EMAIL=admin@financeharbour.ca
+PGADMIN_DEFAULT_PASSWORD=admin123
+PGADMIN_PORT=5050
+
+BACKEND_PORT=8000
 FRONTEND_PORT=5173
 
 DJANGO_SECRET_KEY=your-local-django-secret-here
 DJANGO_DEBUG=True
-DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-DJANGO_CORS_ALLOWED_ORIGINS=http://budgetie.test:5173
+DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend,finance-harbour.test,api.finance-harbour.test
+DJANGO_CORS_ALLOWED_ORIGINS=http://finance-harbour.test:5173
+DJANGO_CSRF_TRUSTED_ORIGINS=http://finance-harbour.test:5173,http://api.finance-harbour.test:8000
+
+GOOGLE_OAUTH_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_OAUTH_CLIENT_SECRET=your-google-oauth-client-secret
+
+VITE_GOOGLE_OAUTH_CLIENT_ID=your-google-oauth-client-id
+VITE_GOOGLE_OAUTH_REDIRECT_URI=http://finance-harbour.test:5173
 ```
 
 Add the local development domains once:
 
 ```bash
-sudo sh -c 'printf "\n127.0.0.1 budgetie.test api.budgetie.test\n" >> /etc/hosts'
+sudo sh -c 'printf "\n127.0.0.1 finance-harbour.test api.finance-harbour.test\n" >> /etc/hosts'
 ```
 
-This lets you visit `budgetie.test` for the frontend, while `api.budgetie.test` is reserved for local API endpoints.
+This lets you visit `finance-harbour.test` for the frontend, while `api.finance-harbour.test` is reserved for local API endpoints.
 
 Install the frontend dependencies on the host machine:
 
@@ -76,16 +87,18 @@ Run database migrations:
 
 ```bash
 docker compose exec backend python manage.py migrate
+```
 
-# Note: To add migrations do this:
+To create new migrations:
 
+```bash
 docker compose exec backend python manage.py makemigrations
 ```
 
 Before opening the frontend, check that the backend is running:
 
 ```text
-http://localhost:8001/api/health/
+http://localhost:8000/api/health/
 ```
 
 That URL should return:
@@ -97,10 +110,10 @@ That URL should return:
 Then open the frontend:
 
 ```text
-http://budgetie.test:5173
+http://finance-harbour.test:5173
 ```
 
-### Django Secret Key
+## Django Secret Key
 
 `DJANGO_SECRET_KEY` is required in `.env`.
 
@@ -110,7 +123,7 @@ For local development, generate a key with:
 docker compose exec backend python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-Then add it to your env in: `DJANGO_SECRET_KEY=`.
+Then add it to your env in `DJANGO_SECRET_KEY=`.
 
 Verify it with:
 
@@ -120,15 +133,9 @@ docker compose exec backend python manage.py shell -c "from django.conf import s
 
 And see something like:
 
-```bash
-11 objects imported automatically (use -v 2 for details).
-
+```text
 50
 ```
-
-### Access to the database
-
-We use pgadmin to access the database:
 
 ## pgAdmin
 
@@ -137,26 +144,28 @@ pgAdmin is available through Docker for viewing the local Postgres database.
 Required `.env` values:
 
 ```env
-PGADMIN_DEFAULT_EMAIL=admin@budgetie.ca
+PGADMIN_DEFAULT_EMAIL=admin@financeharbour.ca
 PGADMIN_DEFAULT_PASSWORD=admin123
 PGADMIN_PORT=5050
 ```
 
-These are example values for you to use.
-
-Make sure you then do:
+Make sure the containers are running:
 
 ```bash
 docker compose up -d
 ```
 
-Finally access here: `http://localhost:5050`
+Access pgAdmin here:
 
-When setting up the connection in pgadmin use the following:
-
+```text
+http://localhost:5050
 ```
-Name: Budgetie Local
-Host name/address: database # pgadmin connects to postgres within the docker enviroment.
+
+When setting up the connection in pgAdmin, use the following:
+
+```text
+Name: Finance Harbour Local
+Host name/address: database
 Port: 5432
 Maintenance database: value of POSTGRES_DB
 Username: value of POSTGRES_USER
@@ -313,14 +322,13 @@ Rebuild the backend container:
 docker compose up -d --build backend
 ```
 
-Do not rebuild from a changed `Pipfile` without updating `Pipfile.lock` as the build will fail.
+Do not rebuild from a changed `Pipfile` without updating `Pipfile.lock` because the build will fail.
 
 ## Testing
 
-Testing is one of the most vital aspects of budgetie, its how we make sure everything that is functioning
-correctly.
+Testing is one of the most important parts of Finance Harbour. It verifies that the app is functioning correctly.
 
-When we want to run all the tests with coverage we do:
+Run all backend tests with coverage:
 
 ```bash
 docker compose exec backend coverage run \
@@ -331,22 +339,36 @@ docker compose exec backend coverage run \
 docker compose exec backend coverage report -m
 ```
 
-To run with out coverage:
+Run backend tests without coverage:
 
 ```bash
 docker compose exec backend python manage.py test
 ```
 
-If we want to run a directory:
+Run tests for one app:
 
 ```bash
 docker compose exec backend python manage.py test authentication
 ```
 
-## Formattig the back end
+## Formatting the backend
 
-Because we use ruff, we can fail a push if we do not remember to run:
+Because the backend uses Ruff, format before committing:
 
 ```bash
 docker compose exec backend ruff format .
+```
+
+Run the full backend check before pushing:
+
+```bash
+docker compose exec backend python manage.py check && docker compose exec backend ruff check . && docker compose exec backend ruff format --check .
+```
+
+## Frontend checks
+
+Run the full frontend check before pushing:
+
+```bash
+docker compose exec frontend yarn check
 ```

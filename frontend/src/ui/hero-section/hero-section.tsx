@@ -21,7 +21,7 @@ const HeroSection = ({
       <div className="mx-auto grid w-full max-w-7xl items-center gap-12 lg:grid-cols-2">
         <div>
           <p className="text-tom-thumb-700 dark:text-tom-thumb-300 text-sm font-semibold tracking-wide uppercase">
-            Budgetie
+            Finance Harbour
           </p>
 
           <h1
@@ -41,11 +41,11 @@ const HeroSection = ({
           <div className="mt-8 flex flex-wrap gap-4">{children}</div>
         </div>
 
-        <div className="bg-storm-dust-100 dark:bg-storm-dust-900 rounded-3xl p-4">
+        <div className="bg-storm-dust-100 dark:bg-storm-dust-900 rounded-sm p-2">
           <img
             src={imageSrc}
             alt={imageAlt}
-            className="h-auto w-full object-contain"
+            className="h-auto w-full rounded-sm object-contain"
           />
         </div>
       </div>

@@ -6,19 +6,19 @@ const About = () => {
   return (
     <main className="bg-storm-dust-50 text-storm-dust-950 dark:bg-storm-dust-950 dark:text-storm-dust-50 px-6 py-16 transition-colors">
       <section
-        aria-labelledby="about-budgetie-title"
+        aria-labelledby="about-finance-harbour-title"
         className="mx-auto flex max-w-6xl flex-col gap-4"
       >
         <div className="mx-auto mb-8 max-w-2xl text-center">
           <h1
             className="text-4xl font-bold tracking-tight"
-            id="about-budgetie-title"
+            id="about-finance-harbour-title"
           >
-            About Budgetie
+            About Finance Harbour
           </h1>
 
           <p className="text-storm-dust-600 dark:text-storm-dust-300 mt-4 text-base leading-7">
-            Budgetie helps you manage budgets, transactions, and spending
+            Finance Harbour helps you manage budgets, transactions, and spending
             periods in one simple place.
           </p>
         </div>

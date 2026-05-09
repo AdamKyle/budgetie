@@ -1,15 +1,93 @@
-import type { FormEvent } from 'react';
+import React, { ChangeEvent, FormEvent, ReactNode, useState } from 'react';
 
-import loginImage from 'assets/login-and-registration/budgetie-login.png';
+import { useGoogleSocialAuth } from 'lib/authentication/api/hooks/use-google-social-auth';
+import { useLogin } from 'lib/authentication/api/hooks/use-login';
+
+import loginImage from 'assets/login-and-registration/finance-harbour-login.png';
+
+import navigateToRoute from 'router/utils/navigate-to-route';
 
 import Button from 'ui/buttons/button';
 import { ButtonVariant } from 'ui/buttons/enums/button-variant';
+import IconButton from 'ui/buttons/icon-button';
 import Card from 'ui/cards/card';
 import Input from 'ui/form-elements/input';
 
 const Login = () => {
+  const { error, loading, setRequestData } = useLogin({
+    navigate_to_route: navigateToRoute,
+  });
+  const { redirectToGoogle } = useGoogleSocialAuth();
+
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const isSubmitDisabled = email === '' || password === '' || loading;
+
+  const getErrorMessage = (fieldError?: string | string[]): string | null => {
+    if (!fieldError) {
+      return null;
+    }
+
+    if (Array.isArray(fieldError)) {
+      return fieldError.join(' ');
+    }
+
+    return fieldError;
+  };
+
+  const handleChangeEmail = (event: ChangeEvent<HTMLInputElement>) => {
+    setEmail(event.target.value);
+  };
+
+  const handleChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
+    setPassword(event.target.value);
+  };
+
+  const handleClickGoogleLogin = () => {
+    redirectToGoogle();
+  };
+
+  const handleClickLoadingButton = () => undefined;
+
   const handleSubmitLogin = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (isSubmitDisabled) {
+      return;
+    }
+
+    setRequestData({
+      email,
+      password,
+    });
+  };
+
+  const renderSubmitButton = (): ReactNode => {
+    if (!loading) {
+      return (
+        <Button
+          additional_css="w-full md:w-auto"
+          disabled={isSubmitDisabled}
+          label="Sign in"
+          type="submit"
+          variant={ButtonVariant.PRIMARY}
+        />
+      );
+    }
+
+    return (
+      <IconButton
+        additional_css="w-full md:w-auto"
+        aria_label="Signing in"
+        disabled
+        icon="fa-solid fa-arrows-rotate animate-spin"
+        label="Signing in"
+        on_click={handleClickLoadingButton}
+        show_label
+        variant={ButtonVariant.PRIMARY}
+      />
+    );
   };
 
   return (
@@ -42,35 +120,46 @@ const Login = () => {
         </div>
 
         <Card>
-          <form className="flex flex-col gap-5" onSubmit={handleSubmitLogin}>
-            <Input
-              autoComplete="email"
-              id="login-email"
-              label="Email"
-              name="email"
-              placeholder="you@example.com"
-              required
-              type="email"
+          <div className="flex flex-col gap-5">
+            <IconButton
+              additional_css="w-full justify-center"
+              aria_label="Continue with Google"
+              icon="fa-brands fa-google"
+              label="Continue with Google"
+              on_click={handleClickGoogleLogin}
+              show_label
+              variant={ButtonVariant.PRIMARY}
             />
 
-            <Input
-              autoComplete="current-password"
-              id="login-password"
-              label="Password"
-              name="password"
-              required
-              type="password"
-            />
-
-            <div className="flex justify-end">
-              <Button
-                additional_css="w-full md:w-auto"
-                label="Sign in"
-                type="submit"
-                variant={ButtonVariant.PRIMARY}
+            <form className="flex flex-col gap-5" onSubmit={handleSubmitLogin}>
+              <Input
+                autoComplete="email"
+                error={getErrorMessage(error?.email)}
+                id="login-email"
+                label="Email"
+                name="email"
+                onChange={handleChangeEmail}
+                placeholder="you@example.com"
+                required
+                type="email"
+                value={email}
               />
-            </div>
-          </form>
+
+              <Input
+                autoComplete="current-password"
+                error={getErrorMessage(error?.password)}
+                id="login-password"
+                label="Password"
+                name="password"
+                onChange={handleChangePassword}
+                required
+                type="password"
+                value={password}
+              />
+
+              <div className="flex justify-end">{renderSubmitButton()}</div>
+            </form>
+          </div>
         </Card>
       </section>
     </main>

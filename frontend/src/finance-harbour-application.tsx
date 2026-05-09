@@ -9,7 +9,7 @@ import Register from './pages/public/register';
 import Updates from './pages/public/updates';
 import { NavigationRoutes } from './react-router/enums/navigation-routes';
 
-const BudgetieApplication = () => {
+const FinanceHarbourApplication = () => {
   return (
     <Routes>
       <Route element={<PublicLayout />}>
@@ -26,4 +26,4 @@ const BudgetieApplication = () => {
   );
 };
 
-export default BudgetieApplication;
+export default FinanceHarbourApplication;

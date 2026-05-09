@@ -1,8 +1,11 @@
 import React, { ChangeEvent, FormEvent, ReactNode, useState } from 'react';
 
-import registerImage from 'assets/login-and-registration/budgetie-register.png';
+import { useGoogleSocialAuth } from 'lib/authentication/api/hooks/use-google-social-auth';
+import { useRegister } from 'lib/authentication/api/hooks/use-register';
 
-import { useRegister } from 'components/pages/registration/api/hooks/use-register';
+import registerImage from 'assets/login-and-registration/finance-harbour-register.png';
+
+import navigateToRoute from 'router/utils/navigate-to-route';
 
 import Button from 'ui/buttons/button';
 import { ButtonVariant } from 'ui/buttons/enums/button-variant';
@@ -11,7 +14,10 @@ import Card from 'ui/cards/card';
 import Input from 'ui/form-elements/input';
 
 const Registration = () => {
-  const { error, loading, setRequestData } = useRegister();
+  const { error, loading, setRequestData } = useRegister({
+    navigate_to_route: navigateToRoute,
+  });
+  const { redirectToGoogle } = useGoogleSocialAuth();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,6 +42,10 @@ const Registration = () => {
 
   const handleChangePassword = (event: ChangeEvent<HTMLInputElement>) => {
     setPassword(event.target.value);
+  };
+
+  const handleClickGoogleRegister = () => {
+    redirectToGoogle();
   };
 
   const handleClickLoadingButton = () => undefined;
@@ -110,34 +120,49 @@ const Registration = () => {
         </div>
 
         <Card>
-          <form className="flex flex-col gap-5" onSubmit={handleSubmitRegister}>
-            <Input
-              autoComplete="email"
-              error={getErrorMessage(error?.email)}
-              id="register-email"
-              label="Email"
-              name="email"
-              onChange={handleChangeEmail}
-              placeholder="you@example.com"
-              required
-              type="email"
-              value={email}
+          <div className="flex flex-col gap-5">
+            <IconButton
+              additional_css="w-full justify-center"
+              aria_label="Continue with Google"
+              icon="fa-brands fa-google"
+              label="Continue with Google"
+              on_click={handleClickGoogleRegister}
+              show_label
+              variant={ButtonVariant.PRIMARY}
             />
 
-            <Input
-              autoComplete="new-password"
-              error={getErrorMessage(error?.password)}
-              id="register-password"
-              label="Password"
-              name="password"
-              onChange={handleChangePassword}
-              required
-              type="password"
-              value={password}
-            />
+            <form
+              className="flex flex-col gap-5"
+              onSubmit={handleSubmitRegister}
+            >
+              <Input
+                autoComplete="email"
+                error={getErrorMessage(error?.email)}
+                id="register-email"
+                label="Email"
+                name="email"
+                onChange={handleChangeEmail}
+                placeholder="you@example.com"
+                required
+                type="email"
+                value={email}
+              />
 
-            <div className="flex justify-end">{renderSubmitButton()}</div>
-          </form>
+              <Input
+                autoComplete="new-password"
+                error={getErrorMessage(error?.password)}
+                id="register-password"
+                label="Password"
+                name="password"
+                onChange={handleChangePassword}
+                required
+                type="password"
+                value={password}
+              />
+
+              <div className="flex justify-end">{renderSubmitButton()}</div>
+            </form>
+          </div>
         </Card>
       </section>
     </main>

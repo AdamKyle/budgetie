@@ -4,7 +4,7 @@ import { Link, NavLink, useNavigate } from 'react-router';
 
 import BaseMobileNavigation from './base-mobile-navigation';
 
-import mascotImage from 'assets/mascot/budegtie-mascot.png';
+import mascotImage from 'assets/mascot/finance-harbour-mascot.png';
 
 import { NavigationRoutes } from 'router/enums/navigation-routes';
 import type NavigationItemDefinition from 'router/public-routes/definitions/navigation-item-definition';
@@ -79,7 +79,7 @@ const BaseNavigation = () => {
         <div className="grid min-h-20 grid-cols-[auto_1fr_auto] items-center gap-4">
           <Link
             to={NavigationRoutes.HOME}
-            aria-label="Budgetie home"
+            aria-label="Finance Harbour home"
             className="focus:ring-storm-dust-400 inline-flex items-center rounded-lg focus:ring-2 focus:outline-hidden"
           >
             <img

@@ -4,4 +4,5 @@ export interface UserDefinition {
   first_name: string;
   last_name: string;
   profile_photo: string;
+  completed_onboarding: boolean;
 }

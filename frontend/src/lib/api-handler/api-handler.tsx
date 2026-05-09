@@ -12,7 +12,7 @@ export default class ApiHandler implements AxiosDefinition {
     url: string,
     config: AxiosRequestConfig & { params?: object } = {}
   ): Promise<T> {
-    this.setCsrfToken(config);
+    this.setRequestConfig(config);
     const modifiedUrl = this.addApiPrefix(url);
     const response: AxiosResponse<T> = await axios.get<T>(modifiedUrl, config);
     return response.data;
@@ -30,7 +30,7 @@ export default class ApiHandler implements AxiosDefinition {
     data: D,
     config: AxiosRequestConfig & { params?: C } = {}
   ): Promise<T> {
-    this.setCsrfToken(config);
+    this.setRequestConfig(config);
     const modifiedUrl = this.addApiPrefix(url);
     const response: AxiosResponse<T> = await axios.post<T>(
       modifiedUrl,
@@ -54,15 +54,20 @@ export default class ApiHandler implements AxiosDefinition {
   }
 
   /**
-   * Get the token from the meta tag,
+   * Get the csrf token from the csrf cookie.
    *
    * @private
    */
-  private getCsrfToken() {
-    const token = document
-      .querySelector('meta[name="csrf-token"]')
-      ?.getAttribute('content');
-    return token || '';
+  private getCsrfToken(): string {
+    const cookie = document.cookie
+      .split('; ')
+      .find((cookieValue) => cookieValue.startsWith('csrftoken='));
+
+    if (!cookie) {
+      return '';
+    }
+
+    return decodeURIComponent(cookie.split('=')[1]);
   }
 
   /**
@@ -71,17 +76,20 @@ export default class ApiHandler implements AxiosDefinition {
    * @param config
    * @private
    */
-  private setCsrfToken(config?: AxiosRequestConfig) {
+  private setRequestConfig(config: AxiosRequestConfig): void {
     const csrfToken = this.getCsrfToken();
+
+    config.withCredentials = true;
+    config.headers = {
+      ...config.headers,
+      Accept: 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
+    };
+
     if (csrfToken) {
-      if (!config) {
-        config = {};
-      }
       config.headers = {
         ...config.headers,
-        Accept: 'application/json',
-        'X-CSRF-Token': csrfToken,
-        'X-Requested-With': 'XMLHttpRequest',
+        'X-CSRFToken': csrfToken,
       };
     }
   }

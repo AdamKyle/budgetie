@@ -1,20 +1,25 @@
 import { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 import RegistrationRequestDefinition from './definitions/registration-request-definition';
-import RegistrationResponseDefinition from './definitions/registration-respone-definition';
+import RegistrationResponseDefinition from './definitions/registration-response-definition';
 import UseRegistrationDefinition from './definitions/use-register-definition';
+import UseRegistrationParamsDefinition from './definitions/use-register-params-definition';
+import { useCsrfToken } from './use-csrf-token';
 
 import { useApiHandler } from 'lib/api-handler/hooks/use-api-handler';
-import { useAuthenticationTokenStorage } from 'lib/authentication/hooks/use-authentication-toke-storage';
+import { AuthenticationApiUrls } from 'lib/authentication/api/enums/authentication-api-urls';
 
-import { RegistrationApiUrls } from 'components/pages/registration/api/enums/registration-api-urls';
+import { NavigationRoutes } from 'router/enums/navigation-routes';
 
-export const useRegister = (): UseRegistrationDefinition => {
+export const useRegister = ({
+  navigate_to_route,
+}: UseRegistrationParamsDefinition): UseRegistrationDefinition => {
+  const navigate = useNavigate();
   const { apiHandler, getUrl } = useApiHandler();
-  const { authenticationTokenStorage } = useAuthenticationTokenStorage();
+  const { fetchCsrfToken } = useCsrfToken();
 
-  const [data, setData] = useState<RegistrationResponseDefinition | null>(null);
   const [error, setError] = useState<UseRegistrationDefinition['error']>(null);
   const [loading, setLoading] = useState(false);
   const [requestData, setRequestData] = useState<RegistrationRequestDefinition>(
@@ -24,12 +29,14 @@ export const useRegister = (): UseRegistrationDefinition => {
     }
   );
 
-  const url = getUrl(RegistrationApiUrls.REGISTER);
+  const url = getUrl(AuthenticationApiUrls.REGISTER);
 
   const register = useCallback(async () => {
     setLoading(true);
 
     try {
+      await fetchCsrfToken();
+
       const result = await apiHandler.post<
         RegistrationResponseDefinition,
         AxiosRequestConfig<AxiosResponse<RegistrationResponseDefinition>>,
@@ -39,10 +46,12 @@ export const useRegister = (): UseRegistrationDefinition => {
         password: requestData.password,
       });
 
-      setData(result);
+      if (!result.user.completed_onboarding) {
+        navigate_to_route(navigate, NavigationRoutes.ONBOARDING);
+        return;
+      }
 
-      authenticationTokenStorage.setAccessToken(result.access);
-      authenticationTokenStorage.setRefreshToken(result.refresh);
+      navigate_to_route(navigate, NavigationRoutes.HOME);
     } catch (err) {
       if (err instanceof AxiosError) {
         setError(err.response?.data || null);
@@ -62,7 +71,6 @@ export const useRegister = (): UseRegistrationDefinition => {
   }, [register, requestData]);
 
   return {
-    data,
     error,
     loading,
     setRequestData,

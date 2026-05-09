@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type UseDarkModeDefinition from './definitions/use-dark-mode-definition';
 
-const THEME_STORAGE_KEY = 'budgetie-theme';
+const THEME_STORAGE_KEY = 'finance-harbour-theme';
 
 const useDarkMode = (): UseDarkModeDefinition => {
   const [isDarkMode, setIsDarkMode] = useState(() => {
