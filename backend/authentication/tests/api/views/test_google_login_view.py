@@ -1,3 +1,4 @@
+import os
 from unittest.mock import patch
 
 from dj_rest_auth.registration.views import SocialLoginView as BaseSocialLoginView
@@ -12,6 +13,12 @@ from authentication.api.views.google_login_view import GoogleLoginView
 
 
 class GoogleLoginViewTest(TestCase):
+    def test_google_login_view_uses_configured_callback_url(self) -> None:
+        self.assertEqual(
+            GoogleLoginView.callback_url,
+            os.environ["GOOGLE_OAUTH_CALLBACK_URL"],
+        )
+
     def test_google_login_response_uses_cookie_only_auth_contract(self) -> None:
         request = RequestFactory().post("/api/auth/social/google/")
         middleware = SessionMiddleware(lambda current_request: None)
@@ -34,7 +41,10 @@ class GoogleLoginViewTest(TestCase):
             }
         )
         social_response.set_cookie(settings.REST_AUTH["JWT_AUTH_COOKIE"], "access-cookie")
-        social_response.set_cookie(settings.REST_AUTH["JWT_AUTH_REFRESH_COOKIE"], "refresh-cookie")
+        social_response.set_cookie(
+            settings.REST_AUTH["JWT_AUTH_REFRESH_COOKIE"],
+            "refresh-cookie",
+        )
         social_response.set_cookie(settings.SESSION_COOKIE_NAME, "session-value")
         social_response.set_cookie(MESSAGES_COOKIE_NAME, "messages-value")
 

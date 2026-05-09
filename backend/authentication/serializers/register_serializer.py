@@ -17,6 +17,14 @@ class RegisterSerializer(BaseRegisterSerializer):
         self.fields.pop("password1", None)
         self.fields.pop("password2", None)
 
+    def validate_email(self, email: str) -> str:
+        normalized_email = User.objects.normalize_email(email)
+
+        if User.objects.filter(email__iexact=normalized_email).exists():
+            raise serializers.ValidationError("An account with this email already exists.")
+
+        return normalized_email
+
     def validate_password(self, password: str) -> str:
         return get_adapter().clean_password(password)
 
