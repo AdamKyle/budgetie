@@ -9,6 +9,7 @@ from rest_framework.response import Response
 
 class CsrfCookieViewSet(viewsets.GenericViewSet):
     permission_classes = [AllowAny]
+    throttle_scope = "auth_csrf"
 
     @method_decorator(ensure_csrf_cookie)
     def list(self, request: Request) -> Response:

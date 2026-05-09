@@ -5,6 +5,8 @@ from authentication.api.views.auth_response import clean_auth_response
 
 
 class LoginView(BaseLoginView):
+    throttle_scope = "auth_login"
+
     def get_response(self) -> Response:
         response = super().get_response()
 

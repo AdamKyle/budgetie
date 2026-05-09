@@ -12,6 +12,7 @@ class GoogleLoginView(SocialLoginView):
     adapter_class = GoogleOAuth2Adapter
     callback_url = os.environ["GOOGLE_OAUTH_CALLBACK_URL"]
     client_class = OAuth2Client
+    throttle_scope = "auth_social_google"
 
     def get_response(self) -> Response:
         response = super().get_response()

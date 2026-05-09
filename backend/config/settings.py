@@ -73,11 +73,20 @@ DATABASES = {
 CORS_ALLOWED_ORIGINS = os.environ["DJANGO_CORS_ALLOWED_ORIGINS"].split(",")
 CORS_ALLOW_CREDENTIALS = True
 CSRF_TRUSTED_ORIGINS = os.environ["DJANGO_CSRF_TRUSTED_ORIGINS"].split(",")
+
 CSRF_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SAMESITE = "Lax"
 SESSION_COOKIE_SECURE = not DEBUG
 SESSION_COOKIE_SAMESITE = "Lax"
 
+SECURE_SSL_REDIRECT = not DEBUG
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_HSTS_SECONDS = 0 if DEBUG else 31536000
+SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
+SECURE_HSTS_PRELOAD = not DEBUG
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = "same-origin"
+X_FRAME_OPTIONS = "DENY"
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
@@ -89,6 +98,16 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ],
+    "DEFAULT_THROTTLE_CLASSES": [
+        "rest_framework.throttling.ScopedRateThrottle",
+    ],
+    "DEFAULT_THROTTLE_RATES": {
+        "auth_csrf": "60/min",
+        "auth_login": "5/min",
+        "auth_registration": "5/min",
+        "auth_social_google": "10/min",
+        "dj_rest_auth": "10/min",
+    },
 }
 
 LANGUAGE_CODE = "en-us"
@@ -108,6 +127,24 @@ AUTHENTICATION_BACKENDS = [
     "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 12,
+        },
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
 REST_AUTH = {
     "USE_JWT": True,
     "JWT_AUTH_COOKIE": "access",
@@ -121,6 +158,10 @@ REST_AUTH = {
     "REGISTER_SERIALIZER": "authentication.serializers.register_serializer.RegisterSerializer",
     "SESSION_LOGIN": False,
     "TOKEN_MODEL": None,
+}
+
+SIMPLE_JWT = {
+    "SIGNING_KEY": os.environ["SIMPLE_JWT_SIGNING_KEY"],
 }
 
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None

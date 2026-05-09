@@ -10,6 +10,8 @@ Copy the example environment file:
 cp .env.example .env
 ```
 
+Do not commit `.env`.
+
 Fill out `.env` with local development values:
 
 ```env
@@ -27,16 +29,24 @@ BACKEND_PORT=8000
 FRONTEND_PORT=5173
 
 DJANGO_SECRET_KEY=your-local-django-secret-here
+SIMPLE_JWT_SIGNING_KEY=your-local-jwt-signing-secret-here
 DJANGO_DEBUG=True
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend,finance-harbour.test,api.finance-harbour.test
-DJANGO_CORS_ALLOWED_ORIGINS=http://finance-harbour.test:5173
-DJANGO_CSRF_TRUSTED_ORIGINS=http://finance-harbour.test:5173,http://api.finance-harbour.test:8000
+DJANGO_CORS_ALLOWED_ORIGINS=http://localhost:5173,http://finance-harbour.test:5173
+DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:5173,http://finance-harbour.test:5173,http://api.finance-harbour.test:8000
 
 GOOGLE_OAUTH_CLIENT_ID=your-google-oauth-client-id
 GOOGLE_OAUTH_CLIENT_SECRET=your-google-oauth-client-secret
+GOOGLE_OAUTH_CALLBACK_URL=http://localhost:5173/auth/google/callback
 
 VITE_GOOGLE_OAUTH_CLIENT_ID=your-google-oauth-client-id
-VITE_GOOGLE_OAUTH_REDIRECT_URI=http://finance-harbour.test:5173
+VITE_GOOGLE_OAUTH_REDIRECT_URI=http://localhost:5173/auth/google/callback
+```
+
+Use different secret values for each environment:
+
+```text
+local != staging != production != GitHub Actions
 ```
 
 Add the local development domains once:
@@ -45,7 +55,15 @@ Add the local development domains once:
 sudo sh -c 'printf "\n127.0.0.1 finance-harbour.test api.finance-harbour.test\n" >> /etc/hosts'
 ```
 
-This lets you visit `finance-harbour.test` for the frontend, while `api.finance-harbour.test` is reserved for local API endpoints.
+This lets you visit `finance-harbour.test` for normal frontend development, while `api.finance-harbour.test` is reserved for local API endpoints.
+
+For local Google OAuth testing, use:
+
+```text
+http://localhost:5173
+```
+
+Google OAuth does not accept `.test` as an authorized JavaScript origin.
 
 Install the frontend dependencies on the host machine:
 
@@ -113,6 +131,12 @@ Then open the frontend:
 http://finance-harbour.test:5173
 ```
 
+For Google OAuth testing, open the frontend through:
+
+```text
+http://localhost:5173
+```
+
 ## Django Secret Key
 
 `DJANGO_SECRET_KEY` is required in `.env`.
@@ -120,22 +144,122 @@ http://finance-harbour.test:5173
 For local development, generate a key with:
 
 ```bash
-docker compose exec backend python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+docker run --rm python:3.14-slim python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
 ```
 
-Then add it to your env in `DJANGO_SECRET_KEY=`.
+Then add it to `.env`:
 
-Verify it with:
+```env
+DJANGO_SECRET_KEY=generated-value-here
+```
+
+`DJANGO_SECRET_KEY` is used by Django signing and security internals.
+
+## JWT Signing Key
+
+`SIMPLE_JWT_SIGNING_KEY` is required in `.env`.
+
+For local development, generate a key with:
 
 ```bash
-docker compose exec backend python manage.py shell -c "from django.conf import settings; print(len(settings.SECRET_KEY.encode('utf-8')))"
+docker run --rm python:3.14-slim python -c "import secrets; print(secrets.token_urlsafe(64))"
 ```
 
-And see something like:
+Then add it to `.env`:
+
+```env
+SIMPLE_JWT_SIGNING_KEY=generated-value-here
+```
+
+Do not reuse `DJANGO_SECRET_KEY` for `SIMPLE_JWT_SIGNING_KEY`.
+
+The keys have separate purposes:
 
 ```text
-50
+DJANGO_SECRET_KEY = Django signing/security internals
+SIMPLE_JWT_SIGNING_KEY = JWT access/refresh token signing
 ```
+
+## Google OAuth
+
+Google OAuth requires backend and frontend environment values.
+
+Backend values:
+
+```env
+GOOGLE_OAUTH_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_OAUTH_CLIENT_SECRET=your-google-oauth-client-secret
+GOOGLE_OAUTH_CALLBACK_URL=http://localhost:5173/auth/google/callback
+```
+
+Frontend values:
+
+```env
+VITE_GOOGLE_OAUTH_CLIENT_ID=your-google-oauth-client-id
+VITE_GOOGLE_OAUTH_REDIRECT_URI=http://localhost:5173/auth/google/callback
+```
+
+The Google client ID must match on the backend and frontend:
+
+```text
+GOOGLE_OAUTH_CLIENT_ID == VITE_GOOGLE_OAUTH_CLIENT_ID
+```
+
+The Google callback URL must match the frontend redirect URI:
+
+```text
+GOOGLE_OAUTH_CALLBACK_URL == VITE_GOOGLE_OAUTH_REDIRECT_URI
+```
+
+The Google client secret is backend-only. Never expose it to the frontend.
+
+For local development, configure the Google OAuth client with:
+
+```text
+Authorized JavaScript origins:
+http://localhost:5173
+
+Authorized redirect URIs:
+http://localhost:5173/auth/google/callback
+```
+
+After changing Google OAuth `.env` values, recreate the affected containers:
+
+```bash
+docker compose up -d --force-recreate backend frontend
+```
+
+## Debug Mode
+
+For local development:
+
+```env
+DJANGO_DEBUG=True
+```
+
+For staging and production:
+
+```env
+DJANGO_DEBUG=False
+```
+
+When `DJANGO_DEBUG=False`, production security settings are enabled, including secure cookies, HTTPS redirect, and HSTS.
+
+## Restarting After `.env` Changes
+
+After changing backend `.env` values, recreate the backend container:
+
+```bash
+docker compose up -d --force-recreate backend
+```
+
+After changing frontend `.env` values, recreate the frontend container:
+
+```bash
+docker compose up -d --force-recreate frontend
+```
+
+Rebuild only when Dockerfile or dependency changes happen.
 
 ## pgAdmin
 
@@ -216,13 +340,7 @@ Restart the frontend container:
 docker compose restart frontend
 ```
 
-Then run the frontend checks:
-
-```bash
-docker compose exec frontend yarn check
-```
-
-You may need to run the cleanup command first:
+Then run the frontend cleanup command:
 
 ```bash
 docker compose exec frontend yarn cleanup
@@ -367,8 +485,23 @@ docker compose exec backend python manage.py check && docker compose exec backen
 
 ## Frontend checks
 
-Run the full frontend check before pushing:
+Run the frontend cleanup command before pushing:
 
 ```bash
-docker compose exec frontend yarn check
+docker compose exec frontend yarn cleanup
+```
+
+## Full Local Verification
+
+Run this before pushing:
+
+```bash
+docker compose exec backend ruff format . && \
+docker compose exec backend python manage.py check && \
+docker compose exec backend ruff check . && \
+docker compose exec backend ruff format --check . && \
+docker compose exec backend python manage.py test && \
+docker compose exec backend coverage run --source=. --omit="*/migrations/*,*/tests/*,manage.py,config/*" manage.py test && \
+docker compose exec backend coverage report -m && \
+docker compose exec frontend yarn cleanup
 ```

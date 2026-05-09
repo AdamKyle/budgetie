@@ -10,6 +10,8 @@ from authentication.api.views.auth_response import clean_auth_response
 
 
 class RegisterView(BaseRegisterView):
+    throttle_scope = "auth_registration"
+
     def create(self, request: Request, *args: Any, **kwargs: Any) -> Response:
         response = super().create(request, *args, **kwargs)
 
