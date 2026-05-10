@@ -18,6 +18,12 @@ export const useAuthenticatedUser = (): UseAuthenticatedUserDefinition => {
   const url = getUrl(AuthenticationApiUrls.USER);
 
   const fetchAuthenticatedUser = useCallback(async () => {
+    if (authenticatedUser) {
+      setLoading(false);
+
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -37,7 +43,7 @@ export const useAuthenticatedUser = (): UseAuthenticatedUserDefinition => {
     } finally {
       setLoading(false);
     }
-  }, [apiHandler, url]);
+  }, [apiHandler, authenticatedUser, url]);
 
   useEffect(() => {
     fetchAuthenticatedUser().catch(() => {});

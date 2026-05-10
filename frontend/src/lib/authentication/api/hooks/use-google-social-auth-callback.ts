@@ -10,6 +10,7 @@ import { useCsrfToken } from './use-csrf-token';
 
 import { useApiHandler } from 'lib/api-handler/hooks/use-api-handler';
 import { AuthenticationApiUrls } from 'lib/authentication/api/enums/authentication-api-urls';
+import { useAuthentication } from 'lib/authentication/hooks/use-authentication';
 
 import { NavigationRoutes } from 'router/enums/navigation-routes';
 
@@ -19,6 +20,7 @@ export const useGoogleSocialAuthCallback = ({
   const navigate = useNavigate();
   const { apiHandler, getUrl } = useApiHandler();
   const { fetchCsrfToken } = useCsrfToken();
+  const { setAuthenticatedUser } = useAuthentication();
 
   const [error, setError] =
     useState<UseGoogleSocialAuthCallbackDefinition['error']>(null);
@@ -44,6 +46,8 @@ export const useGoogleSocialAuthCallback = ({
       >(url, {
         code: requestData.code,
       });
+
+      setAuthenticatedUser(result.user);
 
       if (!result.user.completed_onboarding) {
         navigate_to_route(navigate, NavigationRoutes.ONBOARDING);
@@ -74,6 +78,7 @@ export const useGoogleSocialAuthCallback = ({
     navigate,
     navigate_to_route,
     requestData.code,
+    setAuthenticatedUser,
     url,
   ]);
 

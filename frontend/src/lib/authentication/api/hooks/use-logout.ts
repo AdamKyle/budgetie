@@ -4,10 +4,10 @@ import { useNavigate } from 'react-router';
 
 import UseLogoutDefinition from './definitions/use-logout-definition';
 import UseLogoutParamsDefinition from './definitions/use-logout-params-definition';
-import { useCsrfToken } from './use-csrf-token';
 
 import { useApiHandler } from 'lib/api-handler/hooks/use-api-handler';
 import { AuthenticationApiUrls } from 'lib/authentication/api/enums/authentication-api-urls';
+import { useAuthentication } from 'lib/authentication/hooks/use-authentication';
 
 import { NavigationRoutes } from 'router/enums/navigation-routes';
 
@@ -16,7 +16,7 @@ export const UseLogout = ({
 }: UseLogoutParamsDefinition): UseLogoutDefinition => {
   const navigate = useNavigate();
   const { apiHandler, getUrl } = useApiHandler();
-  const { fetchCsrfToken } = useCsrfToken();
+  const { clearAuthenticatedUser } = useAuthentication();
 
   const [error, setError] = useState<UseLogoutDefinition['error']>(null);
   const [loading, setLoading] = useState(false);
@@ -27,13 +27,13 @@ export const UseLogout = ({
     setLoading(true);
 
     try {
-      await fetchCsrfToken();
-
       await apiHandler.post<
         void,
         AxiosRequestConfig<AxiosResponse<void>>,
         Record<string, never>
       >(url, {});
+
+      clearAuthenticatedUser();
 
       navigate_to_route(navigate, NavigationRoutes.HOME);
     } catch (err) {
@@ -43,7 +43,7 @@ export const UseLogout = ({
     } finally {
       setLoading(false);
     }
-  }, [apiHandler, fetchCsrfToken, navigate, navigate_to_route, url]);
+  }, [apiHandler, clearAuthenticatedUser, navigate, navigate_to_route, url]);
 
   return {
     error,

@@ -13,6 +13,17 @@ export default defineConfig({
     port: 5173,
     strictPort: true,
     allowedHosts: ['finance-harbour.test'],
+    proxy: {
+      '/api': {
+        target: 'http://backend:8000',
+        changeOrigin: false,
+        secure: false,
+        xfwd: true,
+        headers: {
+          'X-Forwarded-Proto': 'https',
+        },
+      },
+    },
     watch: {
       usePolling: true,
     },

@@ -7,6 +7,7 @@ import { BrowserRouter } from 'react-router';
 import FinanceHarbourApplication from './finance-harbour-application';
 
 import { ApiHandlerProvider } from 'lib/api-handler/components/api-handler-provider';
+import { AuthenticationProvider } from 'lib/authentication/components/authentication-provider';
 import { ServiceContainer } from 'lib/service-container-provider/service-container';
 
 import 'styles/styles.css';
@@ -16,7 +17,9 @@ createRoot(document.getElementById('root') as HTMLElement).render(
     <BrowserRouter>
       <ServiceContainer>
         <ApiHandlerProvider>
-          <FinanceHarbourApplication />
+          <AuthenticationProvider>
+            <FinanceHarbourApplication />
+          </AuthenticationProvider>
         </ApiHandlerProvider>
       </ServiceContainer>
     </BrowserRouter>

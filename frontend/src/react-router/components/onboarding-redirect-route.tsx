@@ -5,18 +5,18 @@ import { useAuthentication } from 'lib/authentication/hooks/use-authentication';
 
 import { NavigationRoutes } from 'router/enums/navigation-routes';
 
-const ProtectedRoute = (): ReactNode => {
+const OnboardingRedirectRoute = (): ReactNode => {
   const { authenticatedUser, loading } = useAuthentication();
 
   if (loading) {
     return null;
   }
 
-  if (!authenticatedUser) {
-    return <Navigate replace to={NavigationRoutes.LOGIN} />;
+  if (authenticatedUser && !authenticatedUser.completed_onboarding) {
+    return <Navigate replace to={NavigationRoutes.ONBOARDING} />;
   }
 
   return <Outlet />;
 };
 
-export default ProtectedRoute;
+export default OnboardingRedirectRoute;

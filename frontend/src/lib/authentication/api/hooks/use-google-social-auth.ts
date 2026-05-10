@@ -2,8 +2,6 @@ import { useCallback } from 'react';
 
 import UseGoogleSocialAuthDefinition from './definitions/use-google-social-auth-definition';
 
-import { GoogleSocialAuthProvider } from 'lib/authentication/api/enums/google-social-auth-provider';
-
 export const useGoogleSocialAuth = (): UseGoogleSocialAuthDefinition => {
   const redirectToGoogle = useCallback(() => {
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
@@ -19,7 +17,6 @@ export const useGoogleSocialAuth = (): UseGoogleSocialAuthDefinition => {
     authUrl.searchParams.set('response_type', 'code');
     authUrl.searchParams.set('scope', 'openid email profile');
     authUrl.searchParams.set('access_type', 'online');
-    authUrl.searchParams.set('provider', GoogleSocialAuthProvider.GOOGLE);
 
     window.location.href = authUrl.toString();
   }, []);

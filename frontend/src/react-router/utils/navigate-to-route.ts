@@ -8,11 +8,13 @@ import type { NavigationRoutes } from 'router/enums/navigation-routes';
  * @param navigate
  * @param route
  */
-const navigateToRoute = (
+export const navigateToRoute = (
   navigate: NavigateFunction,
   route: NavigationRoutes
 ) => {
   void navigate(route);
 };
 
-export default navigateToRoute;
+export const navigateToPreviousRoute = (navigate: NavigateFunction) => {
+  void navigate(-1);
+};

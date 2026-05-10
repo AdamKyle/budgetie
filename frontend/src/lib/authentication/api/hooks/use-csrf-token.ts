@@ -15,8 +15,19 @@ export const useCsrfToken = (): UseCsrfTokenDefinition => {
 
   const url = getUrl(AuthenticationApiUrls.CSRF);
 
+  const hasCsrfToken = (): boolean => {
+    return document.cookie
+      .split('; ')
+      .some((cookieValue) => cookieValue.startsWith('csrftoken='));
+  };
+
   const fetchCsrfToken = useCallback(async () => {
+    if (hasCsrfToken()) {
+      return null;
+    }
+
     setLoading(true);
+    setError(null);
 
     try {
       return await apiHandler.get<

@@ -10,6 +10,7 @@ import { useCsrfToken } from './use-csrf-token';
 
 import { useApiHandler } from 'lib/api-handler/hooks/use-api-handler';
 import { AuthenticationApiUrls } from 'lib/authentication/api/enums/authentication-api-urls';
+import { useAuthentication } from 'lib/authentication/hooks/use-authentication';
 
 import { NavigationRoutes } from 'router/enums/navigation-routes';
 
@@ -19,6 +20,7 @@ export const useLogin = ({
   const navigate = useNavigate();
   const { apiHandler, getUrl } = useApiHandler();
   const { fetchCsrfToken } = useCsrfToken();
+  const { setAuthenticatedUser } = useAuthentication();
 
   const [error, setError] = useState<UseLoginDefinition['error']>(null);
   const [loading, setLoading] = useState(false);
@@ -44,6 +46,8 @@ export const useLogin = ({
         password: requestData.password,
       });
 
+      setAuthenticatedUser(result.user);
+
       if (!result.user.completed_onboarding) {
         navigate_to_route(navigate, NavigationRoutes.ONBOARDING);
         return;
@@ -64,6 +68,7 @@ export const useLogin = ({
     navigate_to_route,
     requestData.email,
     requestData.password,
+    setAuthenticatedUser,
     url,
   ]);
 
