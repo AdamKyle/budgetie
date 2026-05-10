@@ -5,7 +5,7 @@ import { useLogin } from 'lib/authentication/api/hooks/use-login';
 
 import loginImage from 'assets/login-and-registration/finance-harbour-login.png';
 
-import navigateToRoute from 'router/utils/navigate-to-route';
+import { navigateToRoute } from 'router/utils/navigate-to-route';
 
 import Button from 'ui/buttons/button';
 import { ButtonVariant } from 'ui/buttons/enums/button-variant';

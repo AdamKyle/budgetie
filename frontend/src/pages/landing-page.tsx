@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import budgetChart from 'assets/hero-section/budget-chart.png';
 
 import { NavigationRoutes } from 'router/enums/navigation-routes';
-import navigateToRoute from 'router/utils/navigate-to-route';
+import { navigateToRoute } from 'router/utils/navigate-to-route';
 
 import Button from 'ui/buttons/button';
 import { ButtonVariant } from 'ui/buttons/enums/button-variant';

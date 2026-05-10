@@ -59,9 +59,16 @@ const AuthenticatedProfileMenu = ({
         aria-expanded={isMenuOpen}
         aria-haspopup="true"
         onClick={handleToggleMenu}
-        className="focus:ring-storm-dust-400 text-storm-dust-700 hover:bg-storm-dust-100 dark:text-storm-dust-200 dark:hover:bg-storm-dust-900 inline-flex h-11 w-11 items-center justify-center rounded-full transition focus:ring-2 focus:outline-hidden"
+        className="border-storm-dust-400 bg-storm-dust-50 focus:ring-storm-dust-400 hover:bg-storm-dust-200 dark:border-storm-dust-600 dark:bg-storm-dust-900 dark:hover:bg-storm-dust-800 inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full border transition focus:ring-2 focus:outline-hidden"
       >
-        <i className="fa-solid fa-user" aria-hidden="true" />
+        <img
+          src={
+            'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 48 48%22%3E%3Cpath fill=%22%233f3f46%22 d=%22M24 24c4.4 0 8-3.6 8-8s-3.6-8-8-8-8 3.6-8 8 3.6 8 8 8Zm0 4c-7.2 0-13 4.4-13 9.8 0 1.2 1 2.2 2.2 2.2h21.6c1.2 0 2.2-1 2.2-2.2 0-5.4-5.8-9.8-13-9.8Z%22/%3E%3C/svg%3E'
+          }
+          alt=""
+          aria-hidden="true"
+          className="h-6 w-6 rounded-full object-contain"
+        />
       </button>
 
       <AnimatePresence initial={false}>

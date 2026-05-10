@@ -7,6 +7,8 @@ import mascotImage from 'assets/mascot/finance-harbour-mascot.png';
 
 import { NavigationRoutes } from 'router/enums/navigation-routes';
 
+import ToggleDarkMode from 'ui/dark-mode-toggle/toggle-dark-mode';
+
 const BaseAuthenticatedNavigation = () => {
   const shouldReduceMotion = useReducedMotion();
 
@@ -32,7 +34,11 @@ const BaseAuthenticatedNavigation = () => {
 
           <div aria-hidden="true" />
 
-          <AuthenticatedProfileMenu shouldReduceMotion={shouldReduceMotion} />
+          <div className="flex items-center justify-end gap-4">
+            <ToggleDarkMode />
+
+            <AuthenticatedProfileMenu shouldReduceMotion={shouldReduceMotion} />
+          </div>
         </div>
       </nav>
     </header>

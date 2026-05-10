@@ -9,7 +9,7 @@ import mascotImage from 'assets/mascot/finance-harbour-mascot.png';
 import { NavigationRoutes } from 'router/enums/navigation-routes';
 import type NavigationItemDefinition from 'router/public-routes/definitions/navigation-item-definition';
 import { PUBLIC_NAVIGATION_ITEMS } from 'router/public-routes/public';
-import navigateToRoute from 'router/utils/navigate-to-route';
+import { navigateToRoute } from 'router/utils/navigate-to-route';
 
 import Button from 'ui/buttons/button';
 import { ButtonVariant } from 'ui/buttons/enums/button-variant';

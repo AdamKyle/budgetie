@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router';
 
 import SectionWithTitleProps from './types/section-with-title-props';
 
-import { navigateToPreviousRoute } from 'router/utils/navigate-to-route';
+import { NavigationRoutes } from 'router/enums/navigation-routes';
+import { navigateToRoute } from 'router/utils/navigate-to-route';
 
 import Card from 'ui/cards/card';
 
@@ -15,7 +16,7 @@ const SectionWithTitle = ({
   const titleId = useId();
 
   const handleGoBack = () => {
-    navigateToPreviousRoute(navigate);
+    navigateToRoute(navigate, NavigationRoutes.HOME);
   };
 
   return (
@@ -26,7 +27,7 @@ const SectionWithTitle = ({
             type="button"
             onClick={handleGoBack}
             aria-label={`Go back from ${title}`}
-            className="focus:ring-storm-dust-400 text-storm-dust-700 hover:bg-storm-dust-100 dark:text-storm-dust-200 dark:hover:bg-storm-dust-800 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition focus:ring-2 focus:outline-hidden"
+            className="focus:ring-storm-dust-400 text-storm-dust-700 hover:border-storm-dust-300 hover:bg-storm-dust-100 dark:text-storm-dust-200 dark:hover:border-storm-dust-600 dark:hover:bg-storm-dust-800 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent transition focus:ring-2 focus:outline-hidden"
           >
             <i className="fa-solid fa-arrow-left" aria-hidden="true" />
           </button>

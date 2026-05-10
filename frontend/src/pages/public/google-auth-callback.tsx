@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router';
 
 import { useGoogleSocialAuthCallback } from 'lib/authentication/api/hooks/use-google-social-auth-callback';
 
-import navigateToRoute from 'router/utils/navigate-to-route';
+import { navigateToRoute } from 'router/utils/navigate-to-route';
 
 import Card from 'ui/cards/card';
 
