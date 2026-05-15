@@ -1,8 +1,10 @@
+import { ReactNode } from 'react';
+
 import type { ButtonVariant } from 'ui/buttons/enums/button-variant';
 
 export default interface IconButtonProps<T extends unknown[] = []> {
   on_click: (...args: T) => void;
-  icon: string;
+  icon: ReactNode | string;
   label: string;
   variant: ButtonVariant;
   disabled?: boolean;

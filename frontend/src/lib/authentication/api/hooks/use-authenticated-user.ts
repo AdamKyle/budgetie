@@ -53,5 +53,6 @@ export const useAuthenticatedUser = (): UseAuthenticatedUserDefinition => {
     authenticatedUser,
     error,
     loading,
+    setAuthenticatedUser,
   };
 };
